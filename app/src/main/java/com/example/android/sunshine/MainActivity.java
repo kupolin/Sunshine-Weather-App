@@ -19,6 +19,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loadWeatherData() {
+        mWeatherTextView.setText("");
         new FetchWeatherTask().execute(SunshinePreferences.getPreferredWeatherLocation(this));
     }
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -76,9 +79,29 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[] weatherData) {
+            //clear text if there are any
             for (String weatherString : weatherData) {
                 mWeatherTextView.append((weatherString) + "\n\n\n");
             }
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.forecast, menu);
+        return true;
+    }
+
+    @Override
+    /*
+    When you successfully handle a menu item, return true. If you don't handle the menu item,
+    you should call the superclass implementation of onOptionsItemSelected() (the default implementation returns false).
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int menuItemThatWasSelected = item.getItemId();
+        if (menuItemThatWasSelected == R.id.action_refresh) {
+            loadWeatherData();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
